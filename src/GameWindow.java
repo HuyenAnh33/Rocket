@@ -8,14 +8,18 @@ public class GameWindow extends JFrame {
     long lastTime = 0;
     Random random = new Random();
 
-    public  GameWindow() {
+    public GameWindow() {
 
         this.setSize(1024, 600);
-
         this.gameCanvas = new GameCanvas();
-
         this.add(this.gameCanvas);//truyen game nay vao windown
+        this.keyboarEvent();
+        this.windowEvent();
 
+        this.setVisible(true);
+    }
+
+    private void keyboarEvent() {
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -26,35 +30,24 @@ public class GameWindow extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     gameCanvas.positionXPlayer -= 8;
-
-                    if (gameCanvas.positionXPlayer <= 0){
-                        gameCanvas.positionXPlayer = 1024;
-                        gameCanvas.positionYPlayer = random.nextInt(601);}
-
                 }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+
+                if (gameCanvas.positionXPlayer <= 0) {
+                    gameCanvas.positionXPlayer = 1024;
+                    gameCanvas.positionYPlayer = random.nextInt(601);
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+
+                {
                     gameCanvas.positionXPlayer += 8;
-
-                    if (gameCanvas.positionXPlayer >=1024){
-                        gameCanvas.positionXPlayer = 0;
-                        gameCanvas.positionYPlayer = random.nextInt(601);}
-                       }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN){
-                    gameCanvas.positionYPlayer += 8;
-
-                    if (gameCanvas.positionYPlayer >= 600){
-                        gameCanvas.positionYPlayer = 0;
-                        gameCanvas.positionXPlayer = random.nextInt(1025);}
-                    }
-                 if (e.getKeyCode() == KeyEvent.VK_UP){
-                    gameCanvas.positionYPlayer -=8;
-                    if (gameCanvas.positionYPlayer <= 0){
-                        gameCanvas.positionYPlayer = 600;
-                        gameCanvas.positionXPlayer = random.nextInt(1025);}
-                    }
+                }
+                if (gameCanvas.positionXPlayer >= 600) {
+                    gameCanvas.positionXPlayer = 0;
+                    gameCanvas.positionYPlayer = random.nextInt(1025);
                 }
 
-
+            }
 
 
             @Override
@@ -62,7 +55,9 @@ public class GameWindow extends JFrame {
 
             }
         });
+    }
 
+    private void windowEvent() {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -70,32 +65,28 @@ public class GameWindow extends JFrame {
             }
         });
 
-
-        this.setVisible(true);
     }
-
 
     public void gameLoop() {
 
         while (true) {
             long currentTime = System.nanoTime();//tinh tu 0 gio 0 phut 0 giay ngay 1 thang 1 nam 1970 den thoi diem hien tai
             if (currentTime - this.lastTime >= 17_000_000) {
-                this.gameCanvas.positionXStar -= 3;//toc do chay cua ngoi sao la 3
+                //this.gameCanvas.positionXStar -= 3;//toc do chay cua ngoi sao la 3
 
                 //cho enemy di chuyen cheo
-                this.gameCanvas.positionXEnemy -= 1;
-                this.gameCanvas.positionYEnemy -= 1;
+                this.gameCanvas.positionXEnemy -= 8;
+                this.gameCanvas.positionYEnemy -= 8;
+                this.gameCanvas.positionXEnemy += this.gameCanvas.speedXEnemy;
+                this.gameCanvas.positionYEnemy += this.gameCanvas.speedYEnemy;
 
-                this.gameCanvas.positionXEnemy += this.gameCanvas.moveXEnemy;
-                this.gameCanvas.positionYEnemy += this.gameCanvas.moveYEnemy;
-
-                if (this.gameCanvas.positionXEnemy >= 1024 || this.gameCanvas.positionXEnemy <=0){
-                    this.gameCanvas.moveXEnemy = -this.gameCanvas.moveXEnemy;
+                if (this.gameCanvas.positionXEnemy >= 1024 || this.gameCanvas.positionXEnemy <= 0) {
+                    this.gameCanvas.speedXEnemy = -this.gameCanvas.speedXEnemy;
                 }
-                if (this.gameCanvas.positionYEnemy >= 600 || this.gameCanvas.positionYEnemy <= 0){
-                    this.gameCanvas.moveYEnemy = -this.gameCanvas.moveYEnemy;
+                if (this.gameCanvas.positionYEnemy >= 600 || this.gameCanvas.positionYEnemy <= 0) {
+                    this.gameCanvas.speedYEnemy = -this.gameCanvas.speedYEnemy;
                 }
-
+                this.gameCanvas.runAll();
                 this.gameCanvas.renderAll();
                 //this.gameCanvas.positionXPlayer -= 1; tu dong di chuyen =1
                 this.lastTime = currentTime;
@@ -105,7 +96,7 @@ public class GameWindow extends JFrame {
 
         //Thread.sleep(20);// dung de nghi
     }
-    }
+}
 
 
 
